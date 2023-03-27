@@ -20,6 +20,20 @@ export class AuthService {
         const user = await newUser.save();
         return this.createToken(user.email);
     }
+    async login(dto: AuthDto) {
+        const user = await this.userModel.findOne({ email: dto.email });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+        if (!isPasswordValid) {
+            throw new Error('Invalid password');
+        }
+        return this.createToken(user.email);
+
+
+    }
+
     createToken(email: string) {
         const payload = { email };
         return this.jwtService.sign(payload);
