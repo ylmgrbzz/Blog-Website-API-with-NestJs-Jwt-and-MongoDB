@@ -17,7 +17,11 @@ export class AuthService {
             email: dto.email,
             password: hashedPassword,
         });
-
-        return await newUser.save();
+        const user = await newUser.save();
+        return this.createToken(user.email);
+    }
+    createToken(email: string) {
+        const payload = { email };
+        return this.jwtService.sign(payload);
     }
 }
